@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>口袋記帳本</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: "#f7f1e8",
+            ink: "#1f2937",
+            teal: "#0f766e",
+            coral: "#d97757",
+            sand: "#eadfcf",
+            moss: "#6b7d57"
+          },
+          boxShadow: {
+            card: "0 18px 50px rgba(48, 54, 43, 0.10)"
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="home" class="min-h-screen">
+  <div class="mx-auto max-w-6xl px-4 pb-24 pt-4 sm:px-6 lg:px-8">
+    <header class="mb-5 rounded-[2rem] border border-white/70 bg-stone-900 px-5 py-5 text-stone-50 shadow-card">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-xs uppercase tracking-[0.35em] text-stone-300">Pocket Ledger</p>
+          <h1 class="mt-2 text-3xl font-bold">口袋記帳本</h1>
+          <p class="mt-2 text-sm text-stone-300">手機優先的日常收支記錄，資料只留在這台裝置。</p>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-right">
+          <p class="text-xs text-stone-300">目前月份</p>
+          <p id="current-month-label" class="text-lg font-semibold">--</p>
+        </div>
+      </div>
+      <div class="mt-4 grid grid-cols-3 gap-3">
+        <article class="rounded-2xl bg-white/10 p-3">
+          <p class="text-xs text-stone-300">本月結餘</p>
+          <p id="summary-balance" class="mt-2 text-xl font-bold">NT$0</p>
+        </article>
+        <article class="rounded-2xl bg-emerald-500/15 p-3">
+          <p class="text-xs text-emerald-100">收入</p>
+          <p id="summary-income" class="mt-2 text-xl font-bold text-emerald-200">NT$0</p>
+        </article>
+        <article class="rounded-2xl bg-orange-500/15 p-3">
+          <p class="text-xs text-orange-100">支出</p>
+          <p id="summary-expense" class="mt-2 text-xl font-bold text-orange-200">NT$0</p>
+        </article>
+      </div>
+    </header>
+
+    <div id="message-box" class="mb-4 hidden rounded-2xl border px-4 py-3 text-sm shadow-sm"></div>
+
+    <section class="glass rounded-[2rem] border border-white/70 p-4 shadow-card">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-teal">Quick Entry</p>
+          <h2 class="mt-1 text-2xl font-bold text-ink">快速記一筆</h2>
+        </div>
+        <div class="rounded-full bg-paper px-3 py-1 text-xs font-semibold text-moss">首頁</div>
+      </div>
+
+      <form id="entry-form" class="mt-4 space-y-4">
+        <div class="grid grid-cols-2 gap-3">
+          <button type="button" data-type="expense" class="type-toggle rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-semibold text-coral">支出</button>
+          <button type="button" data-type="income" class="type-toggle rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm font-semibold text-stone-500">收入</button>
+        </div>
+
+        <div>
+          <label for="amount" class="mb-2 block text-sm font-medium text-stone-600">金額</label>
+          <input id="amount" inputmode="numeric" placeholder="例如 120" required class="w-full rounded-2xl border border-stone-200 bg-white px-4 py-4 text-2xl font-bold outline-none transition focus:border-teal focus:ring-2 focus:ring-teal/20">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="date" class="mb-2 block text-sm font-medium text-stone-600">日期</label>
+            <input id="date" type="date" required class="w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 outline-none transition focus:border-teal focus:ring-2 focus:ring-teal/20">
+          </div>
+          <div>
+            <label id="payment-label" for="payment" class="mb-2 block text-sm font-medium text-stone-600">付款方式</label>
+            <select id="payment" class="w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 outline-none transition focus:border-teal focus:ring-2 focus:ring-teal/20">
+              <option>現金</option>
+              <option>信用卡</option>
+              <option>轉帳</option>
+              <option>電子支付</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <div class="mb-2 flex items-center justify-between gap-3">
+            <label class="block text-sm font-medium text-stone-600">分類</label>
+            <p id="selected-category-value" class="text-sm font-semibold text-teal">請先選主分類</p>
+          </div>
+          <input id="main-category" type="hidden">
+          <input id="category" type="hidden" required>
+          <div id="main-category-chips" class="flex flex-wrap gap-2"></div>
+          <div id="sub-category-section" class="mt-4 hidden rounded-2xl bg-paper/70 p-3">
+            <p class="mb-2 text-sm font-medium text-stone-600">細項</p>
+            <div id="sub-category-chips" class="flex flex-wrap gap-2"></div>
+          </div>
+        </div>
+
+        <div>
+          <label for="note" class="mb-2 block text-sm font-medium text-stone-600">備註</label>
+          <input id="note" placeholder="例如 午餐、加油、咖啡" class="w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 outline-none transition focus:border-teal focus:ring-2 focus:ring-teal/20">
+        </div>
+
+        <button type="submit" class="w-full rounded-2xl bg-teal px-4 py-4 text-base font-bold text-white shadow-lg shadow-teal/20 transition hover:brightness-95">新增紀錄</button>
+      </form>
+    </section>
+  </div>
+
+  <nav class="fixed inset-x-0 bottom-0 border-t border-stone-200 bg-white/90 backdrop-blur">
+    <div class="mx-auto grid max-w-6xl grid-cols-3 px-4 py-2 text-center text-sm">
+      <a href="index.html" class="rounded-2xl bg-stone-900 px-3 py-3 font-semibold text-white">記帳</a>
+      <a href="records.html" class="rounded-2xl px-3 py-3 font-semibold text-stone-500">紀錄</a>
+      <a href="reports.html" class="rounded-2xl px-3 py-3 font-semibold text-stone-500">報表</a>
+    </div>
+  </nav>
+
+  <script src="app.js"></script>
+</body>
+</html>
