@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>報表分析 | 口袋記帳本</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: "#f7f1e8",
+            ink: "#1f2937",
+            teal: "#0f766e",
+            coral: "#d97757",
+            sand: "#eadfcf",
+            moss: "#6b7d57"
+          },
+          boxShadow: {
+            card: "0 18px 50px rgba(48, 54, 43, 0.10)"
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="reports" class="min-h-screen">
+  <div class="mx-auto max-w-6xl px-4 pb-24 pt-4 sm:px-6 lg:px-8">
+    <header class="mb-5 rounded-[2rem] border border-white/70 bg-stone-900 px-5 py-5 text-stone-50 shadow-card">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-xs uppercase tracking-[0.35em] text-stone-300">Reports</p>
+          <h1 class="mt-2 text-3xl font-bold">報表分析</h1>
+          <p class="mt-2 text-sm text-stone-300">看本月分類分佈、單日趨勢，也可以做備份與匯入。</p>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-right">
+          <p class="text-xs text-stone-300">目前月份</p>
+          <p id="current-month-label" class="text-lg font-semibold">--</p>
+        </div>
+      </div>
+      <div class="mt-4 grid grid-cols-3 gap-3">
+        <article class="rounded-2xl bg-white/10 p-3">
+          <p class="text-xs text-stone-300">本月結餘</p>
+          <p id="summary-balance" class="mt-2 text-xl font-bold">NT$0</p>
+        </article>
+        <article class="rounded-2xl bg-emerald-500/15 p-3">
+          <p class="text-xs text-emerald-100">收入</p>
+          <p id="summary-income" class="mt-2 text-xl font-bold text-emerald-200">NT$0</p>
+        </article>
+        <article class="rounded-2xl bg-orange-500/15 p-3">
+          <p class="text-xs text-orange-100">支出</p>
+          <p id="summary-expense" class="mt-2 text-xl font-bold text-orange-200">NT$0</p>
+        </article>
+      </div>
+    </header>
+
+    <div id="message-box" class="mb-4 hidden rounded-2xl border px-4 py-3 text-sm shadow-sm"></div>
+
+    <section class="space-y-5">
+      <div class="glass rounded-[2rem] border border-white/70 p-4 shadow-card">
+        <div class="grid grid-cols-3 gap-3">
+          <article class="rounded-[1.5rem] bg-white/80 p-4">
+            <p class="text-sm text-stone-500">本月收入</p>
+            <p id="month-income" class="mt-2 text-xl font-bold text-emerald-700">NT$0</p>
+          </article>
+          <article class="rounded-[1.5rem] bg-white/80 p-4">
+            <p class="text-sm text-stone-500">本月支出</p>
+            <p id="month-expense" class="mt-2 text-xl font-bold text-coral">NT$0</p>
+          </article>
+          <article class="rounded-[1.5rem] bg-white/80 p-4">
+            <p class="text-sm text-stone-500">本月結餘</p>
+            <p id="month-balance" class="mt-2 text-xl font-bold text-ink">NT$0</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="glass rounded-[2rem] border border-white/70 p-4 shadow-card">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-moss">Overview</p>
+            <h2 class="mt-1 text-2xl font-bold text-ink">本月分類總覽</h2>
+          </div>
+          <div class="flex items-center gap-2 rounded-full bg-stone-100 p-1">
+            <button type="button" data-filter="all" class="filter-btn rounded-full px-4 py-2 text-sm font-semibold text-stone-700">全部</button>
+            <button type="button" data-filter="expense" class="filter-btn rounded-full px-4 py-2 text-sm font-semibold text-stone-500">支出</button>
+            <button type="button" data-filter="income" class="filter-btn rounded-full px-4 py-2 text-sm font-semibold text-stone-500">收入</button>
+          </div>
+        </div>
+        <div id="category-summary" class="mt-4 grid gap-3"></div>
+      </div>
+
+      <div class="glass rounded-[2rem] border border-white/70 p-4 shadow-card">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-coral">Timeline</p>
+            <h2 class="mt-1 text-2xl font-bold text-ink">近期單日趨勢</h2>
+          </div>
+          <p id="record-count" class="text-sm text-stone-500">0 筆</p>
+        </div>
+        <div id="monthly-trend" class="mt-4 space-y-3"></div>
+      </div>
+
+      <div class="glass rounded-[2rem] border border-white/70 p-4 shadow-card">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-teal">Backup</p>
+            <h2 class="mt-1 text-2xl font-bold text-ink">備份與匯入</h2>
+          </div>
+        </div>
+        <div class="mt-4 grid grid-cols-2 gap-3">
+          <button id="export-btn" type="button" class="rounded-2xl border border-stone-200 bg-white px-4 py-3 font-semibold text-stone-700 transition hover:bg-stone-50">匯出資料</button>
+          <label class="cursor-pointer rounded-2xl border border-stone-200 bg-white px-4 py-3 text-center font-semibold text-stone-700 transition hover:bg-stone-50">
+            匯入資料
+            <input id="import-input" type="file" accept="application/json,.json" class="hidden">
+          </label>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <nav class="fixed inset-x-0 bottom-0 border-t border-stone-200 bg-white/90 backdrop-blur">
+    <div class="mx-auto grid max-w-6xl grid-cols-3 px-4 py-2 text-center text-sm">
+      <a href="index.html" class="rounded-2xl px-3 py-3 font-semibold text-stone-500">記帳</a>
+      <a href="records.html" class="rounded-2xl px-3 py-3 font-semibold text-stone-500">紀錄</a>
+      <a href="reports.html" class="rounded-2xl bg-stone-900 px-3 py-3 font-semibold text-white">報表</a>
+    </div>
+  </nav>
+
+  <script src="app.js"></script>
+</body>
+</html>
