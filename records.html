@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>記錄明細 | 口袋記帳本</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: "#f7f1e8",
+            ink: "#1f2937",
+            teal: "#0f766e",
+            coral: "#d97757",
+            sand: "#eadfcf",
+            moss: "#6b7d57"
+          },
+          boxShadow: {
+            card: "0 18px 50px rgba(48, 54, 43, 0.10)"
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="records" class="min-h-screen">
+  <div class="mx-auto max-w-6xl px-4 pb-24 pt-4 sm:px-6 lg:px-8">
+    <header class="mb-5 rounded-[2rem] border border-white/70 bg-stone-900 px-5 py-5 text-stone-50 shadow-card">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-xs uppercase tracking-[0.35em] text-stone-300">Records</p>
+          <h1 class="mt-2 text-3xl font-bold">收支紀錄</h1>
+          <p class="mt-2 text-sm text-stone-300">查看最近紀錄與每日彙整，適合手機快速回查。</p>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-right">
+          <p class="text-xs text-stone-300">總筆數</p>
+          <p id="record-count" class="text-lg font-semibold">0 筆</p>
+        </div>
+      </div>
+      <div class="mt-4 grid grid-cols-3 gap-3">
+        <article class="rounded-2xl bg-white/10 p-3">
+          <p class="text-xs text-stone-300">本月結餘</p>
+          <p id="summary-balance" class="mt-2 text-xl font-bold">NT$0</p>
+        </article>
+        <article class="rounded-2xl bg-emerald-500/15 p-3">
+          <p class="text-xs text-emerald-100">收入</p>
+          <p id="summary-income" class="mt-2 text-xl font-bold text-emerald-200">NT$0</p>
+        </article>
+        <article class="rounded-2xl bg-orange-500/15 p-3">
+          <p class="text-xs text-orange-100">支出</p>
+          <p id="summary-expense" class="mt-2 text-xl font-bold text-orange-200">NT$0</p>
+        </article>
+      </div>
+    </header>
+
+    <div id="message-box" class="mb-4 hidden rounded-2xl border px-4 py-3 text-sm shadow-sm"></div>
+
+    <section class="space-y-5">
+      <div class="glass rounded-[2rem] border border-white/70 p-4 shadow-card">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-teal">Recent</p>
+            <h2 class="mt-1 text-2xl font-bold text-ink">近期紀錄</h2>
+          </div>
+          <p class="text-sm text-stone-500">可刪除</p>
+        </div>
+        <div id="recent-list" class="ledger-line mt-4 space-y-3 rounded-[1.5rem] bg-white/60 p-3"></div>
+      </div>
+
+      <div class="glass rounded-[2rem] border border-white/70 p-4 shadow-card">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-coral">Daily Flow</p>
+            <h2 class="mt-1 text-2xl font-bold text-ink">日期彙整</h2>
+          </div>
+          <p class="text-sm text-stone-500">最新在前</p>
+        </div>
+        <div id="daily-list" class="mt-4 space-y-3"></div>
+      </div>
+    </section>
+  </div>
+
+  <dialog id="delete-dialog" class="w-[min(92vw,28rem)] rounded-[1.75rem] border-0 p-0 shadow-2xl backdrop:bg-stone-900/40">
+    <div class="bg-white p-6">
+      <h3 class="text-xl font-bold text-ink">刪除這筆紀錄？</h3>
+      <p id="delete-message" class="mt-2 text-sm text-stone-500"></p>
+      <div class="mt-6 grid grid-cols-2 gap-3">
+        <button id="cancel-delete" class="rounded-2xl border border-stone-200 px-4 py-3 font-semibold text-stone-700">取消</button>
+        <button id="confirm-delete" class="rounded-2xl bg-rose-600 px-4 py-3 font-semibold text-white">刪除</button>
+      </div>
+    </div>
+  </dialog>
+
+  <nav class="fixed inset-x-0 bottom-0 border-t border-stone-200 bg-white/90 backdrop-blur">
+    <div class="mx-auto grid max-w-6xl grid-cols-3 px-4 py-2 text-center text-sm">
+      <a href="index.html" class="rounded-2xl px-3 py-3 font-semibold text-stone-500">記帳</a>
+      <a href="records.html" class="rounded-2xl bg-stone-900 px-3 py-3 font-semibold text-white">紀錄</a>
+      <a href="reports.html" class="rounded-2xl px-3 py-3 font-semibold text-stone-500">報表</a>
+    </div>
+  </nav>
+
+  <script src="app.js"></script>
+</body>
+</html>
