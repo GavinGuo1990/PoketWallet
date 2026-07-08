@@ -1,0 +1,26 @@
+:root {
+  color-scheme: light;
+}
+
+body {
+  font-family: "Segoe UI", "Noto Sans TC", sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(217, 119, 87, 0.18), transparent 28%),
+    radial-gradient(circle at top right, rgba(15, 118, 110, 0.18), transparent 25%),
+    linear-gradient(180deg, #f9f5ef 0%, #f4ecdf 100%);
+  color: #1f2937;
+}
+
+.glass {
+  backdrop-filter: blur(12px);
+  background: rgba(255, 252, 247, 0.82);
+}
+
+.ledger-line {
+  background-image: linear-gradient(to bottom, rgba(107, 125, 87, 0.14) 1px, transparent 1px);
+  background-size: 100% 2.75rem;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.7;
+}
